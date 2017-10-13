@@ -1,5 +1,7 @@
 from flask import Flask, session
 from flask import render_template, redirect, url_for, request, g, app
+from werkzeug.security import generate_password_hash
+
 from app import webapp
 
 import pymysql
@@ -28,15 +30,38 @@ def teardown_db(exception):
         db.close()
 
 
+@webapp.route('/cleanrow', methods=['GET'])
+def clean():
+    cnx = get_db()
+    cursor = cnx.cursor()
+    query = ''' DELETE FROM userinfo'''
+    cursor.execute(query)
+    cnx.commit()
+    return "Delete Success!"
+
+
 @webapp.route('/welcome', methods=['GET'])
 def welcome():
     return render_template("Login.html")
-# def welcome():
-#     cnx = get_db()
-#     cursor = cnx.cursor()
-#
-#     query = '''INSERT INTO userinfo
-# VALUES (1,'Linda','Linda2Tom')'''
-#     cursor.execute(query)
-#     cnx.commit()
-#     return "Hello world!!!"
+
+
+@webapp.route('/welcome', methods=['POST'])
+# Create a new student and save them in the database.
+def user_create_save():
+    username = request.form.get('Username', "")
+    password = request.form.get('Password', "") # Store the user infomation in these variables
+    encodedPassword=generate_password_hash(password)
+
+    cnx = get_db()
+    cursor = cnx.cursor()
+
+    if  username== "" or password == "" :
+        error_msg = "Error: All fields are required!"
+
+    query = ''' INSERT INTO userinfo (username,user_passwrd)
+                       VALUES (%s,%s)'''
+
+    cursor.execute(query, (username,encodedPassword))
+    cnx.commit()
+
+    return redirect(url_for('sections_list'))
