@@ -12,7 +12,15 @@
     <title>Title</title>
 </head>
 <body>
-
+ <div id="container">
+   <div id="content">
+      <ul>
+        {% for row in data %}
+                <img src='{{row[0]}}' style="width:304px;height:228px;">
+         {% endfor %}
+    </ul>
+   </div>
+ </div>
 <form id="upload-form" action='{{url_for('uploadimg')}}' method='post' enctype="multipart/form-data" >
   <input type="file" name="file" accept="image/*" multiple>
   <input type="submit" value="Upload">

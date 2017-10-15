@@ -1,10 +1,10 @@
 import os
 from flask import Flask, session, flash
-from flask import render_template, redirect, url_for, request, g, app
-from werkzeug.contrib.sessions import Session
+from flask import render_template, redirect, url_for, request, g
 from werkzeug.security import generate_password_hash, check_password_hash
 from wand.image import Image
 from app import webapp
+from PIL import Image
 
 import pymysql
 
@@ -113,26 +113,78 @@ def user_create_save():
 
 @webapp.route('/homepage', methods=['GET'])
 def thumbnailsdisplay():
-    return render_template("Homepage.html")
+    uid=session.pop('uid',None)
+    session['uid'] = uid
+    cnx = get_db()
+    cursor = cnx.cursor()
+    query = ''' select img0 from userimg where 
+    uid=%(uid)s '''
+    cursor.execute(query, {'uid': uid})
+    data=cursor.fetchall()
+    print data[0][0]
+    return render_template("Homepage.html",data=data)
 
 @webapp.route('/homepage', methods=['POST'])
 def uploadimg():
-    target=os.path.join(APP_ROOT,'images/')
+    target=os.path.join(APP_ROOT,'images')
     if not os.path.isdir(target):
         os.mkdir(target)
     for file in request.files.getlist("file"):
+        if len(file.filename)==0:
+            return redirect(url_for('thumbnailsdisplay'))
         filename=file.filename
         destination="/".join([target,filename])
-        print(filename)  #? This is what should be stored in my database
-
         file.save(destination)
+        # cnx = get_db()
+        # cursor = cnx.cursor()
+        # uid=session.pop('uid',None)
+        # session['uid'] = uid
+        # query = ''' INSERT INTO userimg (uid,img_path)
+        #                            VALUES (%s,%s)'''
+        # cursor.execute(query, (uid,destination))
+        # cnx.commit()
+        image = Image.open(destination)
+        size = [100, 100]
+        image.thumbnail(size)
+        array = filename.split("/")
+        newname = "thumbnail"+array[-1]
+        destination2 = "/".join([target, newname])
+        image.save(destination2)
+        # cnx = get_db()
+        # cursor = cnx.cursor()
+        # uid = session.pop('uid', None)
+        # session['uid'] = uid
+        # query = ''' INSERT INTO userimg (uid,img_path,img0)
+        #                                    VALUES (%s,%s, %s)'''
+        # cursor.execute(query, (uid,destination,destination2))
+        # cnx.commit()
+        image2=Image.open(destination)
+        #image2.transform('<200>x<200>')
+        newname2="scale"+array[-1]
+        destination3="/".join([target, newname2])
+        image2.save(destination3)
+
+        image3=Image.open(destination)
+        #image3.transform()
+        newname3="blackandwhite"+array[-1]
+        destination4="/".join([target, newname3])
+        image3.save(destination4)
+
+        image4 = Image.open(destination)
+        #image4.transform()
+        newname4 = "sepia" + array[-1]
+        destination5 = "/".join([target, newname4])
+        image4.save(destination5)
+
         cnx = get_db()
         cursor = cnx.cursor()
-        uid=session.pop('uid',None)
-        query = ''' INSERT INTO userimg (uid,img_path)
-                                   VALUES (%s,%s)'''
-        cursor.execute(query, (uid,filename))
+        uid = session.pop('uid', None)
+        session['uid'] = uid
+        query = ''' INSERT INTO userimg (uid,img_path,img0,img1,img2,img3)
+                                           VALUES (%s,%s, %s,%s,%s,%s)'''
+        cursor.execute(query, (uid,destination,destination2,destination3,destination4,destination5))
         cnx.commit()
-    return "Success"
-    return None
+
+
+    return redirect(url_for('thumbnailsdisplay'))
 
