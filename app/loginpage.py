@@ -121,12 +121,16 @@ def thumbnailsdisplay():
     uid=%(uid)s '''
     cursor.execute(query, {'uid': uid})
     data=cursor.fetchall()
-    print data[0][0]
-    return render_template("Homepage.html",data=data)
+    imgList=[]
+    for s in data:
+        imgURL=url_for('static',filename=s[0])
+        imgList.append(imgURL)
+    #imgURL = url_for('static', filename='blackandwhiteWechatIMG40.jpeg')
+    return render_template("Homepage.html",data=data, imgList = imgList)
 
 @webapp.route('/homepage', methods=['POST'])
 def uploadimg():
-    target=os.path.join(APP_ROOT,'images')
+    target=os.path.join(APP_ROOT,'static')
     if not os.path.isdir(target):
         os.mkdir(target)
     for file in request.files.getlist("file"):
@@ -182,9 +186,28 @@ def uploadimg():
         session['uid'] = uid
         query = ''' INSERT INTO userimg (uid,img_path,img0,img1,img2,img3)
                                            VALUES (%s,%s, %s,%s,%s,%s)'''
-        cursor.execute(query, (uid,destination,destination2,destination3,destination4,destination5))
+        cursor.execute(query, (uid,filename,newname,newname2,newname3,newname4))
         cnx.commit()
-
-
     return redirect(url_for('thumbnailsdisplay'))
 
+@webapp.route('/imagedetail', methods=['POST'])
+def showimgdetail():
+    imgurl=request.form.get('btn', "")
+    array=imgurl.split("/")
+    imgname=array[-1]
+    cnx = get_db()
+    cursor = cnx.cursor()
+    uid = session.pop('uid', None)
+    session['uid'] = uid
+    query = ''' select img1, img2, img3 from userimg
+    where img0=%(imagename)s and uid= %(uid)s'''
+    cursor.execute(query, {'imagename':imgname, 'uid':uid})
+    cnx.commit()
+    data = cursor.fetchall()
+    imgList = []
+    for s in data[0]:
+        print (s)
+        imgURL = url_for('static', filename=s)
+        imgList.append(imgURL)
+    # imgURL = url_for('static', filename='blackandwhiteWechatIMG40.jpeg')
+    return render_template("Imagedetail.html", data=data, imgList=imgList)
