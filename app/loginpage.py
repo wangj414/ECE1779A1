@@ -163,19 +163,27 @@ def uploadimg():
         # cursor.execute(query, (uid,destination,destination2))
         # cnx.commit()
         image2=Image.open(destination)
+        newname2 = "scale" + array[-1]
+        destination3 = "/".join([target, newname2])
         #image2.transform('<200>x<200>')
-        newname2="scale"+array[-1]
-        destination3="/".join([target, newname2])
+        image2=image2.rotate(90)
+        print (image2.type)
+        #image2=image2.grayscale()
+
+        print (destination3)
         image2.save(destination3)
 
         image3=Image.open(destination)
-        #image3.transform()
         newname3="blackandwhite"+array[-1]
-        destination4="/".join([target, newname3])
+        image3 = image3.rotate(180)
+        destination4 = "/".join([target, newname3])
+        # image3 = image3.flop()
         image3.save(destination4)
+
 
         image4 = Image.open(destination)
         #image4.transform()
+        image4=image4.rotate(270)
         newname4 = "sepia" + array[-1]
         destination5 = "/".join([target, newname4])
         image4.save(destination5)
@@ -195,6 +203,7 @@ def showimgdetail():
     imgurl=request.form.get('btn', "")
     array=imgurl.split("/")
     imgname=array[-1]
+    print (imgname)
     cnx = get_db()
     cursor = cnx.cursor()
     uid = session.pop('uid', None)
@@ -206,8 +215,8 @@ def showimgdetail():
     data = cursor.fetchall()
     imgList = []
     for s in data[0]:
-        print (s)
         imgURL = url_for('static', filename=s)
+        print (s)
         imgList.append(imgURL)
     # imgURL = url_for('static', filename='blackandwhiteWechatIMG40.jpeg')
     return render_template("Imagedetail.html", data=data, imgList=imgList)

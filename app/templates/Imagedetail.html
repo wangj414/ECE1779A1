@@ -16,7 +16,7 @@
 
   {% for imgURL in imgList %}
              <form action='{{url_for('showimgdetail')}}' method='post'>
-
+             "{{imgURL}}"
              <a href="{{url_for('showimgdetail')+""}}">
              <input type="image"  id="saveform" src="{{imgURL}}" alt="Submit Form" name="btn" value="{{imgURL}}"x/>
              </form>
@@ -24,10 +24,7 @@
 
 
  </div>
-<form id="upload-form" action='{{url_for('uploadimg')}}' method='post' enctype="multipart/form-data" >
-  <input type="file" name="file" accept="image/*" multiple>
-  <input type="submit" value="Upload">
-</form>
+
 </body>
 </html>
 </body>
