@@ -16,7 +16,7 @@
 
   {% for imgURL in imgList %}
              <form action='{{url_for('showimgdetail')}}' method='post'>
-             "{{imgURL}}"
+
              <a href="{{url_for('showimgdetail')+""}}">
              <input type="image"  id="saveform" src="{{imgURL}}" alt="Submit Form" name="btn" value="{{imgURL}}"x/>
              </form>
