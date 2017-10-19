@@ -5,26 +5,18 @@
     <title>Title</title>
 </head>
 <body>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
  <div id="container">
 
   {% for imgURL in imgList %}
-             <form action='{{url_for('showimgdetail')}}' method='post'>
-             <a href="{{url_for('showimgdetail')+""}}">
-             <input type="image"  id="saveform" src="{{imgURL}}" alt="Submit Form" name="btn" value="{{imgURL}}"x/>
-             </form>
+
+     <a href="/detail?info={{imgURL}}">
+         <image src="{{imgURL}}"></image>
+     </a>
             {% endfor %}
 
 
  </div>
 
-</form>
 <form id="upload-form" action='{{url_for('uploadimg')}}' method='post' enctype="multipart/form-data" >
   <input type="file" name="file" accept="image/*" multiple>
   <input type="submit" value="Upload">

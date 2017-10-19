@@ -152,7 +152,7 @@ def uploadimg():
         with Image(filename=destination) as image:
             with image.clone() as image0:
              destination1="/".join([target, newname0])
-             image0.format = 'png'
+             # image0.format = 'png'
              image0.resize(1024,1024)
              image0.save(filename=destination1)
             destination2 = "/".join([target, newname])
@@ -160,13 +160,13 @@ def uploadimg():
                 thumbimg.resize(100,100)
                 thumbimg.save(filename=destination2)
             with image.clone() as image2:
-                image2.format = 'png'
+                # image2.format = 'png'
                 image2.flip()
                 image2.resize(1024,1024)
                 destination3 = "/".join([target, newname2])
                 image2.save(filename=destination3)
             with image.clone() as image3:
-                image3.format = 'png'
+                # image3.format = 'png'
                 width = image3.width
                 height = image3.height
                 image3.crop(int(width/4),int(height/4),width=int(width/2),height=int(height/2))
@@ -174,7 +174,7 @@ def uploadimg():
                 destination4 = "/".join([target, newname3])
                 image3.save(filename=destination4)
             with image.clone() as image4:
-                image4.format = 'png'
+                # image4.format = 'png'
                 image4.flop()
                 image4.resize(1024, 1024)
                 destination5 = "/".join([target, newname4])
@@ -184,12 +184,6 @@ def uploadimg():
         cursor = cnx.cursor()
         uid = session.pop('uid', None)
         session['uid'] = uid
-        print(uid)
-        print(filename)
-        print(newname)
-        print(newname2)
-        print(newname3)
-        print(newname4)
         query = ''' INSERT INTO userimg (uid,img_path,img0,img1,img2,img3)
                                            VALUES (%s,%s, %s,%s,%s,%s)'''
         cursor.execute(query, (uid, newname0, newname, newname2, newname3, newname4))
@@ -197,12 +191,14 @@ def uploadimg():
     return redirect(url_for('thumbnailsdisplay'))
 
 
-@webapp.route('/imagedetail', methods=['POST'])
-def showimgdetail():
-    imgurl = request.form.get('btn', "")
+@webapp.route('/detail')
+def detail():
+    imgurl = request.args.get('info','')
     array = imgurl.split("/")
     imgname = array[-1]
-    print(imgname)
+    print(imgurl)
+    #print(array)
+    #print(imgname)
     cnx = get_db()
     cursor = cnx.cursor()
     uid = session.pop('uid', None)
@@ -213,6 +209,7 @@ def showimgdetail():
     cnx.commit()
     data = cursor.fetchall()
     imgList = []
+    print(data)
     for s in data[0]:
         imgURL = url_for('static', filename=s)
         print(s)
@@ -282,13 +279,13 @@ def test():
                     thumbimg.resize(100, 100)
                     thumbimg.save(filename=destination2)
                 with image.clone() as image2:
-                    image2.format = 'png'
+                    # image2.format = 'png'
                     image2.flip()
                     image2.resize(1024, 1024)
                     destination3 = "/".join([target, newname2])
                     image2.save(filename=destination3)
                 with image.clone() as image3:
-                    image3.format = 'png'
+                    # image3.format = 'png'
                     width = image3.width
                     height = image3.height
                     image3.crop(int(width / 4), int(height / 4), width=int(width / 2), height=int(height / 2))
@@ -296,7 +293,7 @@ def test():
                     destination4 = "/".join([target, newname3])
                     image3.save(filename=destination4)
                 with image.clone() as image4:
-                    image4.format = 'png'
+                    # image4.format = 'png'
                     image4.flop()
                     image4.resize(1024, 1024)
                     destination5 = "/".join([target, newname4])
@@ -306,12 +303,6 @@ def test():
             cursor = cnx.cursor()
             uid = session.pop('uid', None)
             session['uid'] = uid
-            print(uid)
-            print(filename)
-            print(newname)
-            print(newname2)
-            print(newname3)
-            print(newname4)
             query = ''' INSERT INTO userimg (uid,img_path,img0,img1,img2,img3)
                                                        VALUES (%s,%s, %s,%s,%s,%s)'''
             cursor.execute(query, (uid, filename, newname, newname2, newname3, newname4))

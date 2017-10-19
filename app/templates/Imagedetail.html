@@ -15,9 +15,9 @@
  <div id="container">
 
   {% for imgURL in imgList %}
-             <form action='{{url_for('showimgdetail')}}' method='post'>
+             <form action='{{url_for('detail')}}' method='post'>
 
-             <a href="{{url_for('showimgdetail')+""}}">
+             <a href="{{url_for('detail')+""}}">
              <input type="image"  id="saveform" src="{{imgURL}}" alt="Submit Form" name="btn" value="{{imgURL}}"x/>
              </form>
             {% endfor %}
