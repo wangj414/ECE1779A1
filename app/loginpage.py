@@ -141,13 +141,20 @@ def uploadimg():
             return redirect(url_for('thumbnailsdisplay'))
         filename = file.filename
         destination = "/".join([target, filename])
+        #file.resize(1024,1024)
         file.save(destination)
         array = filename.split("/")
+        newname0="original"+array[-1]
         newname="thumbnail" + array[-1]
         newname2="scale" + array[-1]
         newname3="blackandwhite" + array[-1]
         newname4="sepia" + array[-1]
         with Image(filename=destination) as image:
+            with image.clone() as image0:
+             destination1="/".join([target, newname0])
+             image0.format = 'png'
+             image0.resize(1024,1024)
+             image0.save(filename=destination1)
             destination2 = "/".join([target, newname])
             with image.clone() as thumbimg:
                 thumbimg.resize(100,100)
@@ -185,7 +192,7 @@ def uploadimg():
         print(newname4)
         query = ''' INSERT INTO userimg (uid,img_path,img0,img1,img2,img3)
                                            VALUES (%s,%s, %s,%s,%s,%s)'''
-        cursor.execute(query, (uid, filename, newname, newname2, newname3, newname4))
+        cursor.execute(query, (uid, newname0, newname, newname2, newname3, newname4))
         cnx.commit()
     return redirect(url_for('thumbnailsdisplay'))
 
